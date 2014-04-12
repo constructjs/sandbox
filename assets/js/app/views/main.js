@@ -15,8 +15,7 @@ var loaded = false;
 		},
 
 		preRender: function(){
-			// add some latency so jquery three can parse the markup...
-			console.log( this.template.get("default")() );
+
 		},
 
 		postRender: function(){
