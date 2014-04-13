@@ -2,7 +2,7 @@
  * @name construct.input
  * A construct.js extension that abstracts the use of backbone-input
  *
- * Version: 0.4.0 (Sat, 12 Apr 2014 06:43:23 GMT)
+ * Version: 0.4.0 (Sun, 13 Apr 2014 10:34:12 GMT)
  * Homepage: https://github.com/constructjs/input
  *
  * @author makesites
@@ -39,6 +39,10 @@
 			construct.config.shim["backbone.app"].deps.push("backbone.input.gamepad");
 			construct.config.deps.push("backbone.input.gamepad");
 		}
+		if( options.indexOf("motion") > -1 ) {
+			construct.config.shim["backbone.app"].deps.push("backbone.input.motion");
+			construct.config.deps.push("backbone.input.motion");
+		}
 		// save options
 		Object.extend(construct.options, { input: options });
 
@@ -63,6 +67,9 @@
 			],
 			"backbone.input.gamepad" : [
 				"//rawgithub.com/backbone-input/gamepad/master/build/backbone.input.gamepad"
+			],
+			"backbone.input.motion" : [
+				"//rawgithub.com/backbone-input/motion/master/build/backbone.input.motion"
 			]
 		},
 		"shim": {
@@ -81,6 +88,13 @@
 				]
 			},
 			"backbone.input.mouse": {
+				"deps": [
+					"backbone",
+					"underscore",
+					"jquery"
+				]
+			},
+			"backbone.input.motion": {
 				"deps": [
 					"backbone",
 					"underscore",
@@ -405,6 +419,39 @@ function extendPlayer(){
 
 		},
 
+		// motion support
+		onMotionAccelerometer: function(  ){
+			// prerequisite
+			if( !_.inArray("motion", this.options.monitor) ) return;
+
+			var data = this.params.get("accelerometer");
+
+			var container = this.getContainerDimensions();
+			var halfWidth  = container.size[ 0 ] / 2;
+			var halfHeight = container.size[ 1 ] / 2;
+
+			//this.state.move.yawLeft   = - ( ( data.x - container.offset[ 0 ] ) - halfWidth  ) / halfWidth;
+			//this.state.move.pitchDown =   ( ( data.y - container.offset[ 1 ] ) - halfHeight ) / halfHeight;
+
+			// tabletop
+			//this.state.move.yawLeft   = - data.z * Math.PI/180;
+			//this.state.move.pitchDown =  data.y * Math.PI/180;
+
+			// fly
+			// y goes from 90 to -90 and from 180 to -180
+			var directionX = ( data.y > 0 ) ? 1 : -1;
+			var yaw = ( Math.abs( data.y ) < 90 ) ? data.y : directionX * (180 - Math.abs( data.y )) ;
+			this.state.move.yawLeft = - yaw/90;
+			//console.log( this.state.move.yawLeft );
+			// account for resetting the z axis
+			var directionY = ( data.z < 0 ) ? 1 : -1;
+			this.state.move.pitchDown = directionY * ( 1 - ( Math.abs( data.z )/90 ) );
+
+			this.updateRotationVector();
+
+		},
+
+		// Controls
 
 		_updateControls: function( e ){
 			// controls update only after the object is loaded

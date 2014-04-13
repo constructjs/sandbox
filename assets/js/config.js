@@ -51,6 +51,9 @@ var config = {
 		"backbone.input.gamepad": [
 			"/assets/js/libs/backbone.input.gamepad"
 		],
+		"backbone.input.motion": [
+			"/assets/js/libs/backbone.input.motion"
+		]
 	},
 	"shim": {
 		"construct.input": {

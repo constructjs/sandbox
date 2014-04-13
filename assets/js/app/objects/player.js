@@ -8,7 +8,8 @@ define([
 		options: {
 			url: "/assets/html/player.html",
 			//speed: { x: -0.01 },
-			monitor: ["keys", "mouse", "gamepad"],
+			//monitor: ["keys", "mouse", "gamepad"],
+			monitor: ["motion"],
 			controls: "fly"
 		},
 
