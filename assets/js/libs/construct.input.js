@@ -2,7 +2,7 @@
  * @name construct.input
  * A construct.js extension that abstracts the use of backbone-input
  *
- * Version: 0.4.0 (Sun, 13 Apr 2014 10:34:12 GMT)
+ * Version: 0.4.0 (Mon, 14 Apr 2014 05:27:52 GMT)
  * Homepage: https://github.com/constructjs/input
  *
  * @author makesites
@@ -420,9 +420,9 @@ function extendPlayer(){
 		},
 
 		// motion support
-		onMotionAccelerometer: function(  ){
+		onMotionAccelerometer: function( ){
 			// prerequisite
-			if( !_.inArray("motion", this.options.monitor) ) return;
+			if( !_.inArray("motion", this.options.monitor) ||  !_.inArray("accelerometer", this.options.states.motion) ) return;
 
 			var data = this.params.get("accelerometer");
 
@@ -451,18 +451,34 @@ function extendPlayer(){
 
 		},
 
+		onOrientationUpdate: function(){
+			// prerequisite
+			if( !_.inArray("motion", this.options.monitor) ||  !_.inArray("rift", this.options.states.motion) ) return;
+
+			var data = this.params.get("rift");
+			this.tmpQuaternion = new THREE.Quaternion(data.x, data.y, data.z, data.w);
+
+			// bypass updateRotationVector?
+		},
+
 		// Controls
 
 		_updateControls: function( e ){
 			// controls update only after the object is loaded
 			if( !this.object) return;
 
+			var vr = ( _.inArray("motion", this.options.monitor) &&  _.inArray("rift", this.options.states.motion) );
+
 			switch( this.options.controls ){
 				case "walk":
 					this.updateControlsWalk(e);
 				break;
 				case "fly":
-					this.updateControlsFly(e);
+					if( vr ){
+						this.updateControlsFlyVR(e);
+					} else {
+						this.updateControlsFly(e);
+					}
 				break;
 				default:
 					// nothing?
@@ -486,6 +502,26 @@ function extendPlayer(){
 
 			this.tmpQuaternion.set( this.rotationVector.x * rotMult, this.rotationVector.y * rotMult, this.rotationVector.z * rotMult, 1 ).normalize();
 			this.object.quaternion.multiply( this.tmpQuaternion );
+
+			// expose the rotation vector for convenience
+			this.object.rotation.setFromQuaternion( this.object.quaternion, this.object.rotation.order );
+
+		},
+
+		updateControlsFlyVR: function( e ){
+
+			// remove when the object is no longer visible
+			var $3d = e.target;
+			// look around...
+			var delta = $3d.clock.getDelta();
+			var moveMult = delta * this.options.moveStep;
+			var rotMult = delta * this.options.rotateStep;
+
+			this.object.translateX( this.moveVector.x * moveMult );
+			this.object.translateY( this.moveVector.y * moveMult );
+			this.object.translateZ( this.moveVector.z * moveMult );
+
+			this.object.quaternion.set( this.tmpQuaternion.x, this.tmpQuaternion.y, this.tmpQuaternion.z, this.tmpQuaternion.w  );
 
 			// expose the rotation vector for convenience
 			this.object.rotation.setFromQuaternion( this.object.quaternion, this.object.rotation.order );
