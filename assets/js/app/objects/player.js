@@ -8,9 +8,14 @@ define([
 		options: {
 			url: "/assets/html/player.html",
 			//speed: { x: -0.01 },
-			//monitor: ["keys", "mouse", "gamepad"],
-			monitor: ["motion"],
-			controls: "fly"
+			monitor: ["keys", "mouse", "gamepad"],
+			/*
+			monitor: ["motion", "gamepad"],
+			states: {
+				motion: ["rift"]
+			},
+			*/
+			controls: "walk"
 		},
 
 		preRender: function(){

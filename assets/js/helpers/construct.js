@@ -1,2 +1,2 @@
-//construct.input(["mouse", "keys", "gamepad"]);
-construct.input(["motion"]);
+construct.input(["mouse", "keys", "gamepad"]);
+//construct.input(["motion", "gamepad"]);

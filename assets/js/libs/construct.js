@@ -438,7 +438,8 @@ construct.promise.add(function(){
 
 		// create the 3D environment (watch for live updates)
 		setup: function(){
-			this.$3d = $(this.el).three({ watch: true }, _.bind(this._start, this) );
+			var options = _.extend({ watch: true }, construct.options.three );
+			this.$3d = $(this.el).three(options, _.bind(this._start, this) );
 			$("body").on("update", this.el, _.bind(this._update, this) );
 		},
 

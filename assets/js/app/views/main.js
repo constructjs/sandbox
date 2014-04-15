@@ -34,15 +34,28 @@ var loaded = false;
 			});
 
 		},
-
+/*
 		start: function(){
+
+			// Here is the effect for the Oculus Rift
+			// worldScale 100 means that 1 Units == 1m
+			this.effect = new THREE.OculusRiftEffect( this.$3d.renderer, {worldScale: 1} );
+			this.effect.setSize( window.innerWidth, window.innerHeight );
 
 		},
 
 		update: function( e ){
+			// prerequisite
+			if( !this.effect ) return;
+			// Oculus Rift effect
+			var scene = this.$3d.active.scene;
+			var camera = this.$3d.active.camera;
 
+			if( !scene || !camera ) return;
+
+			this.effect.render( scene, camera );
 		}
-
+*/
 	});
 
 	return APP.Views.Main;

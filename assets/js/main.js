@@ -13,7 +13,12 @@ var Site = function(){
 
 	construct({
 		require: { paths : config.paths },
-		router: "app/controllers/default"
+		router: "app/controllers/default",
+		three: {
+			deps: {
+				"OculusRiftEffect" : "/assets/js/libs/three.OculusRiftEffect.js"
+			}
+		}
 	}, function( response ){ self.initialize( response) });
 };
 
